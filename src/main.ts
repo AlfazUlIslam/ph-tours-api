@@ -1,12 +1,10 @@
-import dotenv from "dotenv";
 import { Server } from "http";
 import app from "./app";
 import connectDatabase from "./app/config/db";
+import { env } from "./app/config/env";
 
-dotenv.config();
-
-const port = process.env.PORT;
-const databaseUri = process.env.DATABASE_URI as string;
+const port = env.PORT;
+const databaseUri = env.MONGODB_URI as string;
 
 let server: Server;
 
