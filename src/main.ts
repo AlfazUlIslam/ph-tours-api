@@ -8,10 +8,15 @@ dotenv.config();
 const port = process.env.PORT;
 const databaseUri = process.env.DATABASE_URI as string;
 
-connectDatabase(databaseUri);
-
 let server: Server;
-server = app.listen(port, () => console.log(`App listening on port: ${port}`));
+
+const startServer = () => {
+    connectDatabase(databaseUri);
+    
+    server = app.listen(port, () => console.log(`App listening on port: ${port}`));
+};
+
+startServer();
 
 process.on("SIGTERM", () => {
     console.log("SIGTERM signal recieved. Server shutting down...");
