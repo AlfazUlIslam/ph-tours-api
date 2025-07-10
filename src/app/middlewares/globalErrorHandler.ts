@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { env } from "../config/env";
 import AppError from "../errorHelpers/AppError";
 
-export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     let statusCode = 500;
     let message = "Something went wrong!";
 
@@ -21,3 +21,5 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
         stack: env.NODE_ENV === "development" ? err.stack : null
     });
 }
+
+export default globalErrorHandler;
