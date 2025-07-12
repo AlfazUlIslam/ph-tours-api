@@ -2,6 +2,8 @@ import AppError from "../../errorHelpers/AppError";
 import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import bcryptjs from "bcryptjs";
+import { generateToken } from "../../utils/jwt";
+import { env } from "../../config/env";
 
 export const credentialsLoginService = async (payload: Partial<IUser>) => {
     const { email, password } = payload;
@@ -21,7 +23,19 @@ export const credentialsLoginService = async (payload: Partial<IUser>) => {
         throw new AppError(404, "Incorrect password");
     };
 
+    const jwtPayload = {
+        userId: isValUser._id,
+        email: isValUser.email,
+        role: isValUser.role
+    };
+
+    const accessToken = generateToken(
+        jwtPayload,
+        env.JWT_SECRET,
+        env.JWT_EXPIRY
+    );
+
     return {
-        email: isValUser.email
+        accessToken
     };
 };
