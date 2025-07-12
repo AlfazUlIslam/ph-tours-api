@@ -2,6 +2,7 @@ import { Server } from "http";
 import app from "./app";
 import connectDatabase from "./app/config/db";
 import { env } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils";
 
 const port = env.PORT;
 const databaseUri = env.MONGODB_URI as string;
@@ -14,7 +15,10 @@ const startServer = () => {
     server = app.listen(port, () => console.log(`App listening on port: ${port}`));
 };
 
-startServer();
+(async () => {
+    await startServer();
+    await seedSuperAdmin();
+})();
 
 process.on("SIGTERM", () => {
     console.log("SIGTERM signal recieved. Server shutting down...");

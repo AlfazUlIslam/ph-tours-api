@@ -1,6 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
-import { createUserService, getUsersService } from "./user.service";
+import { createUserService, getUsersService, updateUserService } from "./user.service";
 import { asyncHandler, sendResponse } from "../../utils";
+import { verifyToken } from "../../utils/jwt";
+import { env } from "../../config/env";
+import { JwtPayload } from "jsonwebtoken";
 
 export const createUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const user = await createUserService(req.body);
@@ -27,3 +30,20 @@ export const getUsers = asyncHandler(async (req: Request, res: Response, next: N
     return;
 });
 
+export const updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    // const token = req.headers.authorization;
+    // const verifiedToken = verifyToken(token as string, env.JWT_SECRET) as JwtPayload;
+    const verifiedToken = req.user;
+    const payload = req.body;
+
+    const user = await updateUserService(userId, payload, verifiedToken);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "User updated successfully",
+        data: user
+    });
+    return;
+});
