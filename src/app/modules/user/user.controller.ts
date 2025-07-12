@@ -32,8 +32,9 @@ export const getUsers = asyncHandler(async (req: Request, res: Response, next: N
 
 export const updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
-    const token = req.headers.authorization;
-    const verifiedToken = verifyToken(token as string, env.JWT_SECRET) as JwtPayload;
+    // const token = req.headers.authorization;
+    // const verifiedToken = verifyToken(token as string, env.JWT_SECRET) as JwtPayload;
+    const verifiedToken = req.user;
     const payload = req.body;
 
     const user = await updateUserService(userId, payload, verifiedToken);

@@ -13,18 +13,17 @@ const checkAuth = (...authRoles: string[]) =>
                 throw new AppError(403, "No token recieved");
             };
 
-            // const verifiedToken = jwt.verify(accessToken, "secret");
             const verifiedToken = verifyToken(accessToken, env.JWT_SECRET) as JwtPayload;
 
             if (!verifiedToken) {
                 throw new AppError(403, "Unauthorized token");
             };
 
-            // (verifiedToken as JwtPayload).role !== Role.ADMIN
             if (!authRoles.includes(verifiedToken.role)) {
                 throw new AppError(403, "Unauthorized access");
             };
 
+            req.user = verifiedToken;
             next();
         } catch (error) {
             next(error);
