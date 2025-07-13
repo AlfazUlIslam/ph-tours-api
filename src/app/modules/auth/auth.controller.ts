@@ -1,22 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
-import { asyncHandler, sendResponse } from "../../utils";
+import { asyncHandler, sendResponse, setAuthCookie } from "../../utils";
 import { credentialsLoginService, getNewAccessTokenService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 
 export const credentialsLogin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const loginInfo = await credentialsLoginService(req.body);
 
-    res.cookie(
-        "accessToken",
-        loginInfo.accessToken,
-        { httpOnly: true, secure: false }
-    );
-    
-    res.cookie(
-        "refreshToken",
-        loginInfo.refreshToken,
-        { httpOnly: true, secure: false }
-    );
+    setAuthCookie(res, loginInfo);
     
     sendResponse(res, {
         success: true,
@@ -34,6 +24,8 @@ export const getNewAccessToken = asyncHandler(async (req: Request, res: Response
     };
 
     const tokenInfo = await getNewAccessTokenService(refreshToken);
+
+    setAuthCookie(res, tokenInfo);
 
     sendResponse(res, {
         success: true,
