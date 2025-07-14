@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { asyncHandler, sendResponse, setAuthCookie } from "../../utils";
-import { credentialsLoginService, getNewAccessTokenService } from "./auth.service";
+import { credentialsLoginService, getNewAccessTokenService, resetPasswordService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 
 export const credentialsLogin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -51,6 +51,22 @@ export const logout = asyncHandler(async (req: Request, res: Response, next: Nex
         success: true,
         statusCode: 200,
         message: "User logged out successfully",
+        data: null
+    });
+    return;
+});
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user;
+
+    await resetPasswordService(oldPassword, newPassword, decodedToken);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Password reset successfully",
         data: null
     });
     return;
