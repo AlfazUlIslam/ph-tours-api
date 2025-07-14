@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { asyncHandler, sendResponse, setAuthCookie } from "../../utils";
 import { credentialsLoginService, getNewAccessTokenService, resetPasswordService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
+import { JwtPayload } from "jsonwebtoken";
 
 export const credentialsLogin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const loginInfo = await credentialsLoginService(req.body);
@@ -61,7 +62,7 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response, ne
     const oldPassword = req.body.oldPassword;
     const decodedToken = req.user;
 
-    await resetPasswordService(oldPassword, newPassword, decodedToken);
+    await resetPasswordService(oldPassword, newPassword, decodedToken as JwtPayload);
 
     sendResponse(res, {
         success: true,
