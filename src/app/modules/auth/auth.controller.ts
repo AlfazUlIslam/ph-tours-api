@@ -30,8 +30,28 @@ export const getNewAccessToken = asyncHandler(async (req: Request, res: Response
     sendResponse(res, {
         success: true,
         statusCode: 200,
-        message: "User logged in successfully",
+        message: "New access token retrieved",
         data: tokenInfo
+    });
+    return;
+});
+
+export const logout = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    res.clearCookie(
+        "accessToken",
+        { httpOnly: true, secure: false, sameSite: "lax", path: '/' }
+    );
+    
+    res.clearCookie(
+        "refreshToken",
+        { httpOnly: true, secure: false, sameSite: "lax", path: '/' }
+    );
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User logged out successfully",
+        data: null
     });
     return;
 });
