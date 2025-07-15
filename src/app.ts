@@ -4,7 +4,8 @@ import cookieParser from "cookie-parser";
 import passport from "passport";
 import expressSession from "express-session";
 import router from "./app/routes";
-import { globalErrorHandler, notFound } from "./app/middlewares"; 
+import { globalErrorHandler, notFound } from "./app/middlewares";
+import "./app/config/passport";
 
 const app = express();
 

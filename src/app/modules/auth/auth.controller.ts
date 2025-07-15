@@ -1,8 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
-import { asyncHandler, sendResponse, setAuthCookie } from "../../utils";
+import { asyncHandler, genUserTokens, sendResponse, setAuthCookie } from "../../utils";
 import { credentialsLoginService, getNewAccessTokenService, resetPasswordService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 import { JwtPayload } from "jsonwebtoken";
+import { env } from "../../config/env";
 
 export const credentialsLogin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const loginInfo = await credentialsLoginService(req.body);
@@ -71,4 +72,18 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response, ne
         data: null
     });
     return;
+});
+
+export const googleRedirect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user;
+
+    if (!user) {
+        throw new AppError(404, "User not found");
+    };
+
+    const tokenInfo = genUserTokens(user);
+
+    setAuthCookie(res, tokenInfo);
+
+    res.redirect(env.FRONTEND_URL);
 });
