@@ -1,9 +1,53 @@
 import passport from "passport";
+import bcryptjs from "bcryptjs";
+import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { env } from "./env";
 import { User } from "../modules/user/user.model";
 import { Role } from "../modules/user/user.interface";
 
+// Local strategy
+passport.use(new LocalStrategy(
+    { usernameField: "email", passwordField: "password" },
+    async (email: string, password: string, done) => {
+        try {
+            // Check if user exists
+            const isUserExist = await User.findOne({email});
+
+            if (!isUserExist) {
+                // return done(null, false, {message: "User does not exist"});
+                return done("User does not exist");
+            }
+
+            // Check if user is google authenticated
+            const isGoogleAuthenticated = isUserExist.auths.some(
+                provObj => provObj.provider === "google"
+            );
+
+            if (isGoogleAuthenticated && !isUserExist.password) {
+                // return done(null, false, { message: "You have already authenticated with google. If you want to login using credentials set a password first. Then you can login using email and password." });
+                return done("You have already authenticated with google. If you want to login using credentials set a password first. Then you can login using email and password.");
+            };
+
+            // Hash password
+            const isPasswordMatched = await bcryptjs.compare(
+                password as string,
+                isUserExist.password as string
+            );
+
+            if (!isPasswordMatched) {
+                return done(null, false, { message: "Password does not match" });
+            };
+
+            return done(null, isUserExist);
+        } catch (error) {
+            console.log(error);
+            done(error);
+        }
+    }
+));
+
+// Google strategy
 passport.use(
     new GoogleStrategy(
         {
