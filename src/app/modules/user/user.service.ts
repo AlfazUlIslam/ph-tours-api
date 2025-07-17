@@ -11,7 +11,7 @@ export const createUserService = async (payload: Partial<IUser>) => {
     const userExists = await User.findOne({email});
 
     if (userExists) {
-        throw new AppError(404, "User already exists");
+        throw new AppError(404, "User already exists with the provided email");
     };
 
     const hashedPassword = await bcryptjs.hash(

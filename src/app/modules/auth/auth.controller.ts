@@ -1,22 +1,41 @@
 import type { Request, Response, NextFunction } from "express";
 import { asyncHandler, genUserTokens, sendResponse, setAuthCookie } from "../../utils";
-import { credentialsLoginService, getNewAccessTokenService, resetPasswordService } from "./auth.service";
+// credentialsLoginService
+import { getNewAccessTokenService, resetPasswordService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 import { JwtPayload } from "jsonwebtoken";
 import { env } from "../../config/env";
+import passport from "passport";
 
 export const credentialsLogin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const loginInfo = await credentialsLoginService(req.body);
+    passport.authenticate("local", async (error: any, user: any, info: any) => {
+        if (error) {
+            return next(new AppError(401, error));
+        };
 
-    setAuthCookie(res, loginInfo);
-    
-    sendResponse(res, {
-        success: true,
-        statusCode: 200,
-        message: "User logged in successfully",
-        data: loginInfo
-    });
-    return;
+        if (!user) {
+            return next(new AppError(401, info.message));
+        };
+
+        // Generate tokens and set cookies
+        const userTokens = await genUserTokens(user);
+        setAuthCookie(res, userTokens);
+
+        // Remove password field and send response
+        const { passport: pass, ...rest } = user.toObject();
+        
+        sendResponse(res, {
+            success: true,
+            statusCode: 200,
+            message: "User logged in successfully",
+            data: {
+                accessToken: userTokens.accessToken,
+                refreshToken: userTokens.refreshToken,
+                user: rest
+            }
+        });
+        return;
+    })(req, res, next);
 });
 
 export const getNewAccessToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
