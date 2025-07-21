@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
 import { asyncHandler, sendResponse } from "../../utils";
 import { createBookingService, getUserBookingsService, getBookingByIdService, getAllBookingsService, updateBookingStatusService } from "./booking.service";
+import { JwtPayload } from "jsonwebtoken";
 
 export const createBooking = asyncHandler(async (req: Request, res: Response) => {
-    const booking = await createBookingService();
+    const decodedToken = req.user as JwtPayload;
+    const booking = await createBookingService(
+        req.body, 
+        decodedToken.userId
+    );
+    
     sendResponse(res, {
         statusCode: 201,
         success: true,
