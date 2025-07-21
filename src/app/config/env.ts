@@ -22,7 +22,13 @@ interface IEnv {
         SSL_STORE_ID: string,
         SSL_STORE_PASS: string,
         SSL_PAYMENT_API: string,
-        SSL_VALIDATION_API: string
+        SSL_VALIDATION_API: string,
+        SLL_SUCCESS_BACKEND_URL: string,
+        SLL_FAIL_BACKEND_URL: string,
+        SLL_CANCEL_BACKEND_URL: string,
+        SLL_SUCCESS_FRONTEND_URL: string,
+        SLL_FAIL_FRONTEND_URL: string,
+        SLL_CANCEL_FRONTEND_URL: string,
     }
 };
 
@@ -46,7 +52,13 @@ const loadEnvVariables = (): IEnv => {
         "SSL_STORE_ID",
         "SSL_STORE_PASS",
         "SSL_PAYMENT_API",
-        "SSL_VALIDATION_API"
+        "SSL_VALIDATION_API",
+        "SLL_SUCCESS_BACKEND_URL",
+        "SLL_FAIL_BACKEND_URL",
+        "SLL_CANCEL_BACKEND_URL",
+        "SLL_SUCCESS_FRONTEND_UR",
+        "SLL_FAIL_FRONTEND_URL",
+        "SLL_CANCEL_FRONTEND_URL",
     ];
 
     requiredEnvVariables.forEach((key) => {
@@ -82,7 +94,13 @@ const loadEnvVariables = (): IEnv => {
             SSL_STORE_ID: process.env.SSL_STORE_ID as string,
             SSL_STORE_PASS: process.env.SSL_STORE_PASS as string,
             SSL_PAYMENT_API: process.env.SSL_PAYMENT_API as string,
-            SSL_VALIDATION_API: process.env.SSL_VALIDATION_API as string
+            SSL_VALIDATION_API: process.env.SSL_VALIDATION_API as string,
+            SLL_SUCCESS_BACKEND_URL: process.env.SLL_SUCCESS_BACKEND_URL as string,
+            SLL_FAIL_BACKEND_URL: process.env.SLL_FAIL_BACKEND_URL as string,
+            SLL_CANCEL_BACKEND_URL: process.env.SLL_CANCEL_BACKEND_URL as string,
+            SLL_SUCCESS_FRONTEND_URL: process.env.SLL_SUCCESS_FRONTEND_URL as string,
+            SLL_FAIL_FRONTEND_URL: process.env.SLL_FAIL_FRONTEND_URL as string,
+            SLL_CANCEL_FRONTEND_URL: process.env.SLL_CANCEL_FRONTEND_URL as string
         }
     };
 };
