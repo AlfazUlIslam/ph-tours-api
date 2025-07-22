@@ -1,10 +1,12 @@
 import AppError from "../../errorHelpers/AppError";
 import { PaymentStatus } from "../payment/payment.interface";
 import { Payment } from "../payment/payment.model";
+import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 import { Tour } from "../tour/tour.model";
 import { User } from "../user/user.model";
 import { BookingStatus, IBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
+import { sslPaymentInitService } from "../sslCommerz/sslCommerz.service";
 
 const getTransactionId = () => {
     return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
@@ -54,10 +56,31 @@ export const createBookingService = async (payload: Partial<IBooking>, userId: s
         .populate("tour", "title costFrom")
         .populate("payment");
 
+        // Initiate SSLCommerz payment
+        const userAddress = (updatedBooking?.user as any).address;
+        const userEmail = (updatedBooking?.user as any).email;
+        const userPhoneNumber = (updatedBooking?.user as any).phone;
+        const userName = (updatedBooking?.user as any).name;
+
+        const sslPayload: ISSLCommerz = {
+            address: userAddress,
+            email: userEmail,
+            phoneNumber: userPhoneNumber,
+            name: userName,
+            amount: amount,
+            transactionId: transactionId
+        };
+
+        const sslPayment = await sslPaymentInitService(sslPayload);
+
+        // Commit mongoose transaction and end session
         await session.commitTransaction();
         session.endSession();
 
-        return updatedBooking;
+        return {
+            paymentUrl: sslPayment.GatewayPageURL,
+            booking: updatedBooking
+        };
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
