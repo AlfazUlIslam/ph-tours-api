@@ -1,14 +1,25 @@
 import { Request, Response } from "express";
 import { asyncHandler, sendResponse } from "../../utils";
 import { createDivisionService, getAllDivisionsService, updateDivisionService, deleteDivisionService, getSingleDivisionService } from "./division.service";
+import { IDivision } from "./division.interface";
 
 export const createDivision = asyncHandler(async (req: Request, res: Response) => {
-    const result = await createDivisionService(req.body);
+    // console.log({
+    //     file: req.file,
+    //     body: req.body
+    // });
+    
+    const payload: IDivision = {
+        ...req.body,
+        thumbnail: req.file?.path
+    };
+    const result = await createDivisionService(payload);
+
     sendResponse(res, {
         statusCode: 201,
         success: true,
         message: "Division created",
-        data: result,
+        data: result
     });
 });
 
