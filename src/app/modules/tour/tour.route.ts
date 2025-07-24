@@ -3,6 +3,7 @@ import { checkAuth, validateRequest } from "../../middlewares";
 import { Role } from "../user/user.interface";
 import { createTourZodSchema, updateTourZodSchema, createTourTypeZodSchema } from "./tour.validation";
 import { createTourType, updateTourType, getAllTourTypes, deleteTourType, getAllTours, createTour, updateTour, deleteTour } from "./tour.controller";
+import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.get("/", getAllTours);
 router.post(
     "/create",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.array("files"),
     validateRequest(createTourZodSchema),
     createTour
 );
