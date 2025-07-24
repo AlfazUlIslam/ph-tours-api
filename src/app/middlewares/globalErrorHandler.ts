@@ -10,19 +10,23 @@ const globalErrorHandler = async (err: any, req: Request, res: Response, next: N
        console.log(err); 
     };
 
-    if (req.file) {
-        await deleteImageFromCloudinary(req.file.path);
-    };
+    try {
+        if (req.file) {
+            await deleteImageFromCloudinary(req.file.path);
+        };
 
-    if (req.files && req.files.length) {
-        const imageUrls = (req.files as Express.Multer.File[]).map(
-            (file) => file.path
-        );
+        if (req.files && req.files.length) {
+            const imageUrls = (req.files as Express.Multer.File[]).map(
+                (file) => file.path
+            );
 
-        await Promise.all(imageUrls.map(
-            (imageUrl) => deleteImageFromCloudinary(imageUrl)
-        ));
-    };
+            await Promise.all(imageUrls.map(
+                (imageUrl) => deleteImageFromCloudinary(imageUrl)
+            ));
+        };    
+    } catch (cleanupError) {
+         console.error("Failed to clean up Cloudinary images:", cleanupError);
+    }
 
     let statusCode = 500;
     let message = "Something went wrong!";
