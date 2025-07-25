@@ -24,15 +24,19 @@ const checkAuth = (...authRoles: string[]) =>
             const isValUser = await User.findOne({email: verifiedToken.email});
 
             if (!isValUser) {
-                throw new AppError(404, "User does not exist");
+                throw new AppError(400, "User does not exist");
             };
 
             if (isValUser.isActive === IsActive.BLOCKED || isValUser.isActive === IsActive.INACTIVE) {
-                throw new AppError(404, `User is ${isValUser.isActive}`);
+                throw new AppError(400, `User is ${isValUser.isActive}`);
             };
             
             if (isValUser.isDeleted) {
-                throw new AppError(404, "User is deleted");
+                throw new AppError(400, "User is deleted");
+            };
+            
+            if (isValUser.isVerified) {
+                throw new AppError(400, "User is not verified");
             };
 
             if (!authRoles.includes(verifiedToken.role)) {

@@ -3,6 +3,7 @@ import { credentialsLogin, getNewAccessToken, logout, changePassword, resetPassw
 import { checkAuth } from "../../middlewares";
 import { Role } from "../user/user.interface";
 import passport from "passport";
+import { env } from "../../config/env";
 
 const router = Router();
 
@@ -22,7 +23,10 @@ router.get("/google", async (req: Request, res: Response, next: NextFunction) =>
 });
 router.get(
     "/google/callback", 
-    passport.authenticate("google", {failureRedirect: "/login"}), 
+    passport.authenticate(
+        "google", 
+        {failureRedirect: `${env.FRONTEND_URL}/login?error=There are some issues with your account. Please contact with our support team.`}
+    ), 
     googleRedirect
 );
 
