@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { asyncHandler, genUserTokens, sendResponse, setAuthCookie } from "../../utils";
 // credentialsLoginService
-import { getNewAccessTokenService, resetPasswordService } from "./auth.service";
+import { getNewAccessTokenService, resetPasswordService, setPasswordService, changePasswordService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 import { JwtPayload } from "jsonwebtoken";
 import { env } from "../../config/env";
@@ -72,6 +72,37 @@ export const logout = asyncHandler(async (req: Request, res: Response, next: Nex
         success: true,
         statusCode: 200,
         message: "User logged out successfully",
+        data: null
+    });
+    return;
+});
+
+export const changePassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user;
+
+    await changePasswordService(oldPassword, newPassword, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Password reset successfully",
+        data: null
+    });
+    return;
+});
+
+export const setPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload;
+    const { password } = req.body;
+
+    await setPasswordService(decodedToken.userId, password);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Password reset successfully",
         data: null
     });
     return;
