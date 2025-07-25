@@ -4,11 +4,6 @@ import { createDivisionService, getAllDivisionsService, updateDivisionService, d
 import { IDivision } from "./division.interface";
 
 export const createDivision = asyncHandler(async (req: Request, res: Response) => {
-    // console.log({
-    //     file: req.file,
-    //     body: req.body
-    // });
-    
     const payload: IDivision = {
         ...req.body,
         thumbnail: req.file?.path
@@ -46,8 +41,12 @@ export const getSingleDivision = asyncHandler(async (req: Request, res: Response
 });
 export const updateDivision = asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id;
+    const payload: IDivision = {
+        ...req.body,
+        thumbnail: req.file?.path
+    };
 
-    const result = await updateDivisionService(id, req.body);
+    const result = await updateDivisionService(id, payload);
     sendResponse(res, {
         statusCode: 200,
         success: true,
