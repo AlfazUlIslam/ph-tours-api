@@ -19,21 +19,28 @@ interface IEnv {
     EXPRESS_SESSION_SECRET: string;
     FRONTEND_URL: string;
     SSL: {
-        SSL_STORE_ID: string,
-        SSL_STORE_PASS: string,
-        SSL_PAYMENT_API: string,
-        SSL_VALIDATION_API: string,
-        SSL_SUCCESS_BACKEND_URL: string,
-        SSL_FAIL_BACKEND_URL: string,
-        SSL_CANCEL_BACKEND_URL: string,
-        SSL_SUCCESS_FRONTEND_URL: string,
-        SSL_FAIL_FRONTEND_URL: string,
-        SSL_CANCEL_FRONTEND_URL: string,
+        SSL_STORE_ID: string;
+        SSL_STORE_PASS: string;
+        SSL_PAYMENT_API: string;
+        SSL_VALIDATION_API: string;
+        SSL_SUCCESS_BACKEND_URL: string;
+        SSL_FAIL_BACKEND_URL: string;
+        SSL_CANCEL_BACKEND_URL: string;
+        SSL_SUCCESS_FRONTEND_URL: string;
+        SSL_FAIL_FRONTEND_URL: string;
+        SSL_CANCEL_FRONTEND_URL: string;
     },
     CLOUDINARY: {
-        CLOUDINARY_CLOUD_NAME: string,
-        CLOUDINARY_API_KEY: string,
-        CLOUDINARY_API_SECRET: string
+        CLOUDINARY_CLOUD_NAME: string;
+        CLOUDINARY_API_KEY: string;
+        CLOUDINARY_API_SECRET: string;
+    },
+    EMAIL_SENDER: {
+        SMTP_HOST: string;
+        SMTP_PORT: string;
+        SMTP_USER: string;
+        SMTP_FROM: string;
+        SMTP_PASS: string;
     }
 };
 
@@ -66,7 +73,12 @@ const loadEnvVariables = (): IEnv => {
         "SSL_CANCEL_FRONTEND_URL",
         "CLOUDINARY_CLOUD_NAME",
         "CLOUDINARY_API_KEY",
-        "CLOUDINARY_API_SECRET"
+        "CLOUDINARY_API_SECRET",
+        "SMTP_HOST",
+        "SMTP_PORT",
+        "SMTP_USER",
+        "SMTP_FROM",
+        "SMTP_PASS"
     ];
 
     requiredEnvVariables.forEach((key) => {
@@ -114,6 +126,13 @@ const loadEnvVariables = (): IEnv => {
             CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
             CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
             CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string
+        },
+        EMAIL_SENDER: {
+            SMTP_HOST: process.env.SMTP_HOST as string,
+            SMTP_PORT: process.env.SMTP_PORT as string,
+            SMTP_USER: process.env.SMTP_USER as string,
+            SMTP_FROM: process.env.SMTP_FROM as string,
+            SMTP_PASS: process.env.SMTP_PASS as string
         }
     };
 };

@@ -7,3 +7,4 @@ export { default as verifyToken } from "./verifyToken";
 export { default as createNewAccessTokenWithRefreshToken } from "./createNewAccessTokenWithRefreshToken";
 export { default as setAuthCookie } from "./setAuthCookie";
 export { default as getTransactionId } from "./getTransactionId";
+export { default as sendEmail } from "./sendEmail";
