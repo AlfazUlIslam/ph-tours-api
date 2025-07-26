@@ -3,6 +3,7 @@ import app from "./app";
 import connectDatabase from "./app/config/db";
 import { env } from "./app/config/env";
 import { seedSuperAdmin } from "./app/utils";
+import { connectRedis } from "./app/config/redis.config";
 
 const port = env.PORT;
 const databaseUri = env.MONGODB_URI as string;
@@ -16,6 +17,7 @@ const startServer = () => {
 };
 
 (async () => {
+    await connectRedis();
     await startServer();
     await seedSuperAdmin();
 })();
