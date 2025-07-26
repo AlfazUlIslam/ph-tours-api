@@ -18,7 +18,7 @@ const startServer = () => {
 
 (async () => {
     await connectRedis();
-    await startServer();
+    startServer();
     await seedSuperAdmin();
 })();
 
