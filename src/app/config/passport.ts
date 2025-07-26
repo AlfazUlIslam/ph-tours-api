@@ -4,7 +4,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { env } from "./env";
 import { User } from "../modules/user/user.model";
-import { Role } from "../modules/user/user.interface";
+import { IsActive, Role } from "../modules/user/user.interface";
 
 // Local strategy
 passport.use(new LocalStrategy(
@@ -17,8 +17,20 @@ passport.use(new LocalStrategy(
             if (!isUserExist) {
                 // return done(null, false, {message: "User does not exist"});
                 return done("User does not exist");
-            }
+            };
 
+            if (isUserExist.isVerified) {
+                return done("User is not verified");
+            };
+
+            if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
+                return done(`User is ${isUserExist.isActive}`);
+            };
+            
+            if (isUserExist.isDeleted) {
+                return done("User is deleted");
+            };
+            
             // Check if user is google authenticated
             const isGoogleAuthenticated = isUserExist.auths.some(
                 provObj => provObj.provider === "google"
@@ -62,21 +74,37 @@ passport.use(
                     return done(null, false, { message: "No email found" });
                 };
 
-                const user = await User.create({
-                    email,
-                    name: profile.displayName,
-                    picture: profile.photos?.[0].value,
-                    role: Role.USER,
-                    isVerified: true,
-                    auths: [
-                        { 
-                            provider: "google",
-                            providerId: profile.id
-                        }
-                    ]
-                });
+                let isUserExist = await User.findOne({ email });
 
-                return done(null, user);
+                if (isUserExist && isUserExist.isVerified) {
+                    return done(null, false, {message: "User is not verified"});
+                };
+
+                if (isUserExist && (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE)) {
+                    return done(`User is ${isUserExist?.isActive}`);
+                };
+                
+                if (isUserExist && isUserExist.isDeleted) {
+                    return done("User is deleted");
+                };
+
+                if (!isUserExist) {
+                    isUserExist = await User.create({
+                        email,
+                        name: profile.displayName,
+                        picture: profile.photos?.[0].value,
+                        role: Role.USER,
+                        isVerified: true,
+                        auths: [
+                            { 
+                                provider: "google",
+                                providerId: profile.id
+                            }
+                        ]
+                    });
+                };
+
+                return done(null, isUserExist);
             } catch (error) {
                 console.log("Google strategy error", error);
                 return done(error);

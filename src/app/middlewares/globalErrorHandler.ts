@@ -3,11 +3,30 @@ import { env } from "../config/env";
 import AppError from "../errorHelpers/AppError";
 import { handleDuplicateError, handleCastError, handleValidationError, handleZodError } from "../helpers";
 import { IErrorSources } from "../interfaces/error.types";
+import { deleteImageFromCloudinary } from "../config/cloudinary.config";
 
-const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const globalErrorHandler = async (err: any, req: Request, res: Response, next: NextFunction) => {
     if (env.NODE_ENV === "development") {
        console.log(err); 
     };
+
+    try {
+        if (req.file) {
+            await deleteImageFromCloudinary(req.file.path);
+        };
+
+        if (req.files && req.files.length) {
+            const imageUrls = (req.files as Express.Multer.File[]).map(
+                (file) => file.path
+            );
+
+            await Promise.all(imageUrls.map(
+                (imageUrl) => deleteImageFromCloudinary(imageUrl)
+            ));
+        };    
+    } catch (cleanupError) {
+         console.error("Failed to clean up Cloudinary images:", cleanupError);
+    }
 
     let statusCode = 500;
     let message = "Something went wrong!";

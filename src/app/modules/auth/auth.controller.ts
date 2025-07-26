@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { asyncHandler, genUserTokens, sendResponse, setAuthCookie } from "../../utils";
 // credentialsLoginService
-import { getNewAccessTokenService, resetPasswordService } from "./auth.service";
+import { forgotPasswordService, getNewAccessTokenService, resetPasswordService, setPasswordService, changePasswordService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 import { JwtPayload } from "jsonwebtoken";
 import { env } from "../../config/env";
@@ -77,12 +77,41 @@ export const logout = asyncHandler(async (req: Request, res: Response, next: Nex
     return;
 });
 
-export const resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+export const changePassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const newPassword = req.body.newPassword;
     const oldPassword = req.body.oldPassword;
     const decodedToken = req.user;
 
-    await resetPasswordService(oldPassword, newPassword, decodedToken as JwtPayload);
+    await changePasswordService(oldPassword, newPassword, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Password reset successfully",
+        data: null
+    });
+    return;
+});
+
+export const setPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload;
+    const { password } = req.body;
+
+    await setPasswordService(decodedToken.userId, password);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Password reset successfully",
+        data: null
+    });
+    return;
+});
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user;
+
+    await resetPasswordService(req.body, decodedToken as JwtPayload);
 
     sendResponse(res, {
         success: true,
@@ -112,3 +141,22 @@ export const googleRedirect = asyncHandler(async (req: Request, res: Response, n
 
     res.redirect(`${env.FRONTEND_URL}/${redirectTo}`);
 });
+
+export const forgotPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    await forgotPasswordService(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Email sent successfully",
+        data: null
+    });
+    return;
+});
+
+/*
+http://localhost:5173/reset-password?id=6883a9db6cd6b485d4f9d30e&token=
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODgzYTlkYjZjZDZiNDg1ZDRmOWQzMGUiLCJlbWFpbCI6ImFsZmF6LnVsLmlzbGFtLm1tdmlpQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzUzNDU5MjExLCJleHAiOjE3NTM0NTk4MTF9.FEo9jmU8fH57Q7MmwAgmYpSZaeH-PlEvjvHxBkTRrLI
+*/

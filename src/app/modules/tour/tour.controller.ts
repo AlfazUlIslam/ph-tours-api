@@ -1,9 +1,17 @@
 import { Request, Response } from "express";
 import { asyncHandler, sendResponse } from "../../utils";
 import { createTourService, getAllToursService, updateTourService, deleteTourService, getAllTourTypesService, createTourTypeService, updateTourTypeService, deleteTourTypeService } from "./tour.service";
+import { ITour } from "./tour.interface";
 
 export const createTour = asyncHandler(async (req: Request, res: Response) => {
-    const result = await createTourService(req.body);
+    const payload: ITour = {
+        ...req.body,
+        images: (req.files as Express.Multer.File[]).map(
+            (file) => file.path
+        )
+    };
+    
+    const result = await createTourService(payload);
     sendResponse(res, {
         statusCode: 201,
         success: true,
@@ -25,7 +33,13 @@ export const getAllTours = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateTour = asyncHandler(async (req: Request, res: Response) => {
-
+    const payload: ITour = {
+        ...req.body,
+        images: (req.files as Express.Multer.File[]).map(
+            (file) => file.path
+        )
+    };
+    
     const result = await updateTourService(req.params.id, req.body);
     sendResponse(res, {
         statusCode: 200,

@@ -55,5 +55,3 @@ process.on("uncaughtException", (error) => {
 
     process.exit(1);
 });
-
-// Promise.reject(new Error("Error"));

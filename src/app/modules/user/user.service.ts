@@ -89,3 +89,11 @@ export const updateUserService = async (userId: string, payload: Partial<IUser>,
 
     return newUpdatedUser;
 };
+
+export const getMeService = async (userId: string) => {
+    const user = await User.findById(userId).select("-password");
+
+    return {
+        data: user
+    };
+};
