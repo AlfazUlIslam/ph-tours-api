@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler, sendResponse } from "../../utils";
-import { sendOtpService } from "./otp.service";
+import { sendOtpService, verifyOtpService } from "./otp.service";
 
 export const sendOtp = asyncHandler(
     async (req: Request, res: Response) => {
@@ -18,6 +18,8 @@ export const sendOtp = asyncHandler(
 
 export const verifyOtp = asyncHandler(
     async (req: Request, res: Response) => {
+        const { email , otp } = req.body;
+        await verifyOtpService(email, otp);
 
         sendResponse(res, {
             statusCode: 200,
