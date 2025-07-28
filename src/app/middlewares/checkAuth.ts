@@ -35,7 +35,7 @@ const checkAuth = (...authRoles: string[]) =>
                 throw new AppError(400, "User is deleted");
             };
             
-            if (isValUser.isVerified) {
+            if (!isValUser.isVerified) {
                 throw new AppError(400, "User is not verified");
             };
 

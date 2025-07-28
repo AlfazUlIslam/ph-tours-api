@@ -5,7 +5,7 @@ import ejs from "ejs";
 import AppError from "../errorHelpers/AppError";
 
 const transport = nodemailer.createTransport({
-    secure: true,
+    secure: false,
     auth: {
         user: env.EMAIL_SENDER.SMTP_USER,
         pass: env.EMAIL_SENDER.SMTP_PASS

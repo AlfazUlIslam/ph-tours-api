@@ -33,12 +33,6 @@ export const updateUserZodSchema = z.object({
         .min(2, {message: "Name has to contain at least 2 characters"})
         .max(50, {message: "Name can contain at max 50 characters"})
         .optional(),
-    password: z.string()
-        .min(8, {message: "Password must be at least 8 characters long"})
-        .regex(/^(?=.*[A-Z])/, {message: "Password must contain at least 1 uppercase letter"})
-        .regex(/^(?=.*[!@#$%^&*])/, {message: "Password must contain at least 1 special character"})
-        .regex(/^(?=.*\d)/, {message: "Password must contain at least 1 number"})
-        .optional(),
     phone: z
         .string()
         .regex(/^(?:\+8801\d{9}|01\d{9})$/, {message: "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX"})
