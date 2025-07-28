@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler, sendResponse } from "../../utils";
 import { getInvoiceDownloadUrlService, cancelPaymentService, failPaymentService, initPaymentService, successPaymentService } from "./payment.service";
 import { env } from "../../config/env";
+import { validatePaymentService } from "../sslCommerz/sslCommerz.service";
 
 export const initPayment = asyncHandler(async (req: Request, res: Response) => {
     const bookingId = req.params.bookingId;
@@ -53,6 +54,19 @@ export const getInvoiceDownloadUrl = asyncHandler(
             success: true,
             message: "Invoice download URL retrieved successfully",
             data: result
+        });
+    }
+);
+
+export const validatePayment = asyncHandler(
+    async (req: Request, res: Response) => {
+        console.log("sslcommerz ipn url body", req.body);
+        await validatePaymentService(req.body);
+        sendResponse(res, {
+            statusCode: 200,
+            success: true,
+            message: "Payment Validated Successfully",
+            data: null
         });
     }
 );
