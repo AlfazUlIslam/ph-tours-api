@@ -15,20 +15,23 @@ passport.use(new LocalStrategy(
             const isUserExist = await User.findOne({email});
 
             if (!isUserExist) {
-                // return done(null, false, {message: "User does not exist"});
-                return done("User does not exist");
+                return done(null, false, {message: "User does not exist"});
+                // return done("User does not exist");
             };
 
-            if (isUserExist.isVerified) {
-                return done("User is not verified");
+            if (!isUserExist.isVerified) {
+                return done(null, false, { message: "User is not verified" });
+                // return done("User is not verified");
             };
 
             if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
-                return done(`User is ${isUserExist.isActive}`);
+                return done(null, false, { message: `User is ${isUserExist.isActive}` });
+                // return done(`User is ${isUserExist.isActive}`);
             };
             
             if (isUserExist.isDeleted) {
-                return done("User is deleted");
+                return done(null, false, { message: "User is deleted" });
+                // return done("User is deleted");
             };
             
             // Check if user is google authenticated
@@ -37,8 +40,10 @@ passport.use(new LocalStrategy(
             );
 
             if (isGoogleAuthenticated && !isUserExist.password) {
-                // return done(null, false, { message: "You have already authenticated with google. If you want to login using credentials set a password first. Then you can login using email and password." });
-                return done("You have already authenticated with google. If you want to login using credentials set a password first. Then you can login using email and password.");
+                return done(null, false, { 
+                    message: "You have already authenticated with google. If you want to login using credentials set a password first. Then you can login using email and password." 
+                });
+                // return done("You have already authenticated with google. If you want to login using credentials set a password first. Then you can login using email and password.");
             };
 
             // Hash password
@@ -53,8 +58,8 @@ passport.use(new LocalStrategy(
 
             return done(null, isUserExist);
         } catch (error) {
-            console.log(error);
-            done(error);
+            console.log("Passport local strategy error:", error);
+            return done(error);
         }
     }
 ));
