@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { getMeService, createUserService, getUsersService, updateUserService } from "./user.service";
+import { getSingleUserService, getMeService, createUserService, getUsersService, updateUserService } from "./user.service";
 import { asyncHandler, sendResponse } from "../../utils";
 import { JwtPayload } from "jsonwebtoken";
 
@@ -57,3 +57,14 @@ export const getMe = asyncHandler(async (req: Request, res: Response, next: Next
     });
     return;
 });
+
+export const getSingleUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await getSingleUserService(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User Retrieved Successfully",
+        data: result.data
+    })
+})
