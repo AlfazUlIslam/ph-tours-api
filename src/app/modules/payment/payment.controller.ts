@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler, sendResponse } from "../../utils";
-import { cancelPaymentService, failPaymentService, initPaymentService, successPaymentService } from "./payment.service";
+import { getInvoiceDownloadUrlService, cancelPaymentService, failPaymentService, initPaymentService, successPaymentService } from "./payment.service";
 import { env } from "../../config/env";
 
 export const initPayment = asyncHandler(async (req: Request, res: Response) => {
@@ -42,3 +42,17 @@ export const cancelPayment = asyncHandler(async (req: Request, res: Response) =>
         res.redirect(`${env.SSL.SSL_CANCEL_FRONTEND_URL}?transactionId=${query.transactionId}&message=${result.message}&amount=${query.amount}&status=${query.status}`);
     };
 });
+
+export const getInvoiceDownloadUrl = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { paymentId } = req.params;
+        const result = await getInvoiceDownloadUrlService(paymentId);
+
+        sendResponse(res, {
+            statusCode: 200,
+            success: true,
+            message: "Invoice download URL retrieved successfully",
+            data: result
+        });
+    }
+);
