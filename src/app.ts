@@ -14,9 +14,13 @@ app.use(expressSession({ secret: "Your secret", resave: false, saveUninitialized
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
-app.use(cors({ origin: env.FRONTEND_URL }));
 app.use(express.json());
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({ 
+    origin: env.FRONTEND_URL,
+    credentials: true
+}));
 
 app.use("/api/v1", router);
 
